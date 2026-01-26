@@ -1,0 +1,12 @@
+_subdirectory: template
+
+_exclude:
+  - includes
+
+name:
+  type: str
+  help: Name of the project
+
+description:
+  type: str
+  help: Description of the project

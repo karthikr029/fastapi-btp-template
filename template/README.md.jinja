@@ -1,0 +1,82 @@
+# {{name}}
+
+{{description}}
+
+---
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Project Layout](#project-layout)
+- [Deployment](#deployment)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11 or higher
+- [UV](https://docs.astral.sh/uv/) (Python package and project manager) *Note: uv can also be installed on BAS. Follow this [installation guide](https://docs.astral.sh/uv/getting-started/installation/)*
+- Cloud Foundry CLI (Non BAS systems) (For Deployment)
+- SAP BTP account (For deployment)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/flask-api-template.git
+   cd flask-api-template
+   ```
+
+2. create a virtual environment and install dependencies using uv
+    ```
+    uv sync
+    ```
+
+## Project Layout
+```
+├── app #Application Directory
+│   ├── common
+│   │   └── __init__.py
+│   ├── routers
+│   │   └── __init__.py
+│   ├── main.py #Main script for the application
+│   ├── Procfile #Start commad for CF 
+│   ├── requirements.txt #Python dependencies 
+│   └── runtime.txt #Python version for CF Runtime
+├── docs #Documentation Directory [Optional]
+│   └── CHANGELOG.md
+├── tests #Tests Directory [Optional]
+│   └── unit_test.py 
+├── manifest.yaml #CF Deployment descriptor
+├── pyproject.toml #Project configuration
+├── README.md
+└── uv.lock 
+```
+> [!NOTE]
+> Use `uv` for dependency management. The template includes a `pre-commit` hook that automatically updates the requirements file with the project dependencies added with uv. Update the `pre-commit-config` if the deployed version must include any of the dependency groups
+
+## Deployment
+
+1. Authenticate to your Cloud Foundry space using the command:
+
+   ```bash
+   cf login --sso
+   ```
+
+2. Verify that the `manifest.yml` file is correctly configured for your application.
+
+3. Deploy your Flask application using the following command:
+
+   ```bash
+   cf push
+   ```
+
+   If you have different versions of manifest:
+
+   ```bash
+   cf push -f manifest-dev.yaml
+   ```
