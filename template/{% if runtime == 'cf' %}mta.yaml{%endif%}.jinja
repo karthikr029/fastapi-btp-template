@@ -1,0 +1,62 @@
+_schema-version: 3.3.0
+ID: {% include pathjoin('includes', 'name-slug.jinja') %}
+version: 1.0.0
+description: "{{description}}"
+
+parameters:
+  enable-parallel-deployments: true
+
+modules:
+  - name: {% include pathjoin('includes', 'name-slug.jinja') %}-srv
+    type: python
+    path: app
+    parameters:
+      buildpack: python_buildpack
+      commands: gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind :$PORT
+    requires:
+      - name: {% include pathjoin('includes', 'name-slug.jinja') %}-auth
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    build-parameters:
+      builder: custom
+      commands:
+        - uv export --no-hashes --no-header --no-annotate --no-dev --no-emit-project --directory app --output-file requirements.txt
+  {% if hana%}
+  - name: {% include pathjoin('includes', 'name-slug.jinja') %}-db-deployer
+    type: hdb
+    path: db
+    parameters:
+      nodejs_buildpack
+    requires:
+      - name: {% include pathjoin('includes', 'name-slug.jinja') %}-db
+    {% endif %}
+resources:
+  - name: {% include pathjoin('includes', 'name-slug.jinja') %}-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+  {% if hana %}
+  - name: {% include pathjoin('includes', 'name-slug.jinja') %}-db
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  {% endif %}
+  {% if destination == 'internet' or destination == 'onprem' %}- name: {% include pathjoin('includes', 'name-slug.jinja') %}-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+  {% if destination == 'onprem' %}
+  - name: {% include pathjoin('includes', 'name-slug.jinja') %}-connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
+  {% endif %}
+  {% endif %}
+  

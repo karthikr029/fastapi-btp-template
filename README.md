@@ -27,11 +27,11 @@ follow the [installation guide](https://copier.readthedocs.io/en/stable/#install
 1. using uv
 
 ```
-uvx copier copy https://github.tools.sap/CoE-IN-CLOUD-INT/python-app-template.git <Destination Path>
+uvx copier copy https://github.com/karthikr029/fastapi-btp-template.git <Destination Path>
 ```
 2. using copier cli
 ```
-copier copy https://github.tools.sap/CoE-IN-CLOUD-INT/python-app-template.git <Destination Path>
+copier copy https://github.com/karthikr029/fastapi-btp-template.git <Destination Path>
 ```
 
 ## Example
@@ -46,7 +46,7 @@ cd sample
 ```
 3. generate project using the template in the current folder
 ```
-copier copy https://github.tools.sap/CoE-IN-CLOUD-INT/python-app-template.git .
+copier copy https://github.com/karthikr029/fastapi-btp-template.git .
 ```
 4. fill in the prompts to generate the project from the template
 

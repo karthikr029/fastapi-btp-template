@@ -10,3 +10,22 @@ name:
 description:
   type: str
   help: Description of the project
+
+hana:
+  type: bool
+  help: Add Hana HDI container
+
+destination:
+  type: str
+  help: Add connectivity services
+  choices:
+    Internet: internet
+    On-Premise: onprem
+    None: none
+
+runtime:
+  type: str
+  help: BTP Runtime
+  choices:
+    Cloud Foundry: cf
+    Kyma: kyma

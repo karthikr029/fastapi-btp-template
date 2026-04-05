@@ -1,0 +1,24 @@
+# Ignore virtual environment
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore local environment files
+.env
+*.log
+.DS_Store
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore test-related files
+tests/
+*.test
+
+# Ignore deployment artifacts
+*.tar.gz
+*.zip
