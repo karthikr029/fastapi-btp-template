@@ -1,0 +1,78 @@
+global:
+  domain: {{domain}}
+  imagePullSecret: 
+    name: {{secret}}
+  image:
+    registry: {{registry}}
+    tag: latest
+srv:
+  bindings:
+    auth:
+      serviceInstanceName: xsuaa
+    {% if hana %} db:
+      serviceInstanceName: hana
+    {% endif %}{% if destination == 'internet' or destination == 'onprem' %} destination:
+      serviceInstanceName: 'destination'
+    {% endif %}
+  image:
+    repository: {% include pathjoin('includes', 'name-slug.jinja') %}-srv
+  resources:
+    limits:
+      ephemeral-storage: 1G
+      memory: 1G
+    requests:
+      ephemeral-storage: 1G
+      cpu: 500m
+      memory: 1G
+  {% if destination == 'onprem' %}additionalVolumes:
+    - name: connectivity-secret
+      volumeMount:
+        mountPath: /bindings/connectivity
+        readOnly: true
+      projected:
+        sources:
+          - secret:
+              name: <your-connectivity-binding>
+              optional: false
+          - secret:
+              name: <your-connectivity-binding>
+              optional: false
+              items:
+                - key: token_service_url
+                  path: url
+          - configMap:
+              name: "{{ '{{ .Release.Name }}' }}-connectivity-proxy-info"
+              optional: false
+  {% endif %}
+xsuaa:
+  serviceOfferingName: xsuaa
+  servicePlanName: application
+  parameters:
+    tenant-mode: dedicated
+    oauth2-configuration:
+      redirect-uris:
+        - https://*.{{ '{{ tpl .Values.global.domain . }}' }}/**
+    xsappname: {% include pathjoin('includes', 'name-slug.jinja') %}-{{ '{{ .Release.Namespace }}' }}
+
+{% if hana %}hana-deployer:
+  image:
+    repository: {% include pathjoin('includes', 'name-slug.jinja') %}-deployer
+  bindings:
+    hana:
+      serviceInstanceName: hana
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1G
+    requests:
+      cpu: 1000m
+      memory: 1G
+
+hana:
+  serviceOfferingName: hana
+  servicePlanName: hdi-shared 
+{% endif %}
+{% if destination == 'internet' or destination == 'onprem' %}destination:
+  serviceOfferingName: destination
+  servicePlanName: lite
+{% endif %}
